@@ -1,0 +1,20 @@
+
+name: Package docker
+
+on: [push]
+
+jobs:
+  build:
+    name: build latest docker image
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Client Directory
+        run: cd src/client
+      - name: Publish Image
+        run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+      - name: Build the Docker image
+        run: docker build -t kvoli/ccc-assignment-2 .
+      - name: Push the Docker image to the registry
+        run: docker push kvoli/ccc-assignment-2
