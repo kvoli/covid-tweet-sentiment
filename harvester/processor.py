@@ -42,6 +42,7 @@ class TweetProcessor():
             tweet_time = tweet_time.replace(tzinfo=timezone.utc).astimezone(pytz.timezone('Australia/Melbourne')).isoformat()
             tweet_doc["created_at"] = tweet_time
 
+            # Clean for sentiment analysis?
             tweet_doc["text"] = tweet["text"]
             
             # User details

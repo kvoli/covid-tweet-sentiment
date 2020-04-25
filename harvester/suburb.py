@@ -62,9 +62,9 @@ class SuburbProcessor():
                 # lat_max = float(tweet["place"]["bounding_box"]["coordinates"][0][2][1])
 
                 # Randomise.
-                longitude = random.uniform(victoria[0], victoria[2])
-                latitude = random.uniform(victoria[1], victoria[3])
-                # return None, None, None
+                # longitude = random.uniform(victoria[0], victoria[2])
+                # latitude = random.uniform(victoria[1], victoria[3])
+                return None, None, None
             
             location = Point(longitude, latitude)
  

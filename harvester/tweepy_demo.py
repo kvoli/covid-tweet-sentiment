@@ -6,14 +6,10 @@ import queue
 import threading
 import config
 import processor
-
+import sys
 
 from typing import *
-def get_auth():
-    auth = tweepy.OAuthHandler(config.TWITTER_CONSUMER_KEY, config.TWITTER_CONSUMER_SECRET)
-    auth.set_access_token(config.TWITTER_ACCESS_TOKEN, config.TWITTER_ACCESS_TOKEN_SECRET)
-    return tweepy.API(auth)
-    
+
 
 class StreamListener(tweepy.StreamListener):
 
@@ -38,7 +34,14 @@ class StreamListener(tweepy.StreamListener):
         # Reconnect
         return True
 
-def start_listener(twitter_listener, locations):
+
+def get_auth():
+    auth = tweepy.OAuthHandler(config.TWITTER_CONSUMER_KEY, config.TWITTER_CONSUMER_SECRET)
+    auth.set_access_token(config.TWITTER_ACCESS_TOKEN, config.TWITTER_ACCESS_TOKEN_SECRET)
+    return tweepy.API(auth)
+    
+
+def start_listener(twitter_listener):
     try:
         tweepy_stream = tweepy.Stream(api.auth, twitter_listener)
 
@@ -50,16 +53,17 @@ def start_listener(twitter_listener, locations):
         print("Error:", e)
 
 
-def search_user(user_id, q):
+def search_user(user_id):
     # Search user
 
+    # Get tweets from different date ranges
     tweets_old = tweepy.Cursor(api.user_timeline, id=user_id, \
-        since_id=config.TWEET_DEC2018, max_id=config.TWEET_APR2019).items(200)
+        since_id=config.TWEET_DEC2018, max_id=config.TWEET_APR2019).items(config.SEARCH_LIMIT)
 
     tweets_new = tweepy.Cursor(api.user_timeline, id=user_id, \
-        since_id=config.TWEET_DEC2019, max_id=config.TWEET_APR2020).items(200)
+        since_id=config.TWEET_DEC2019, max_id=config.TWEET_APR2020).items(config.SEARCH_LIMIT)
 
-    # Add tweets to job queue
+    # Save tweets or ADD TO QUEUE?
     count =0 
     for i in tweets_old:
         db.add_tweet(i._json)
@@ -72,15 +76,18 @@ def search_user(user_id, q):
     print(f"{user_id}: {count}\n")
 
 def save_tweet(tweet, q):
-    db.add_tweet(tweet)
+
+    # Check if user tweets with location on
+    valid_user = db.add_tweet(tweet)
 
     # Check if seen user before
-    if db.add_user(tweet["user"]["id_str"], tweet["user"]["screen_name"], tweet["id_str"]):
+    if valid_user and not db.has_user(tweet["user"]["id_str"]):
 
+        db.add_user(tweet["user"]["id_str"], tweet["user"]["screen_name"], tweet["id_str"])
 
         # Can only get 200 tweets from a user at a time. Add for loop to increase.
         # for i in range(5):
-        search_user(tweet["user"]["id_str"], q)
+        search_user(tweet["user"]["id_str"])
 
 def main():
 
@@ -97,7 +104,9 @@ def main():
     twitter_listener = StreamListener(q)
     
     # Start listening
-    threading.Thread(target=start_listener, args=(twitter_listener, None)).start()
+    threading.Thread(target=start_listener, args=(twitter_listener)).start()
+
+    # Start thread to do a search for users who tweeted recently in Melb with location, add to quueue
 
     # Number of API errors
     # Move this into the listener?
@@ -118,7 +127,7 @@ def main():
                 if error_count> 100:
                     # Stops us from being rate limited
                     print("Too many errors")
-                    system.exit()
+                    sys.exit()
 
 
         except queue.Empty:
