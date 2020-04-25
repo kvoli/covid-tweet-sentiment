@@ -10,11 +10,10 @@ jobs:
     steps: 
       - name: Checkout Repository
         uses: actions/checkout@v2
-        with:
-          path: src/client
-      - name: Publish Image
-        run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-      - name: Build the Docker image
-        run: docker build -t kvoli/ccc-assignment-2 .
-      - name: Push the Docker image to the registry
-        run: docker push kvoli/ccc-assignment-2
+      - name: Publish to Registry
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with: 
+          name: kvoli/ccc-client
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          workdir: src/client/
