@@ -40,7 +40,6 @@ class StreamListener(tweepy.StreamListener):
 
 def start_listener(twitter_listener, locations):
     try:
-        api = get_auth()
         tweepy_stream = tweepy.Stream(api.auth, twitter_listener)
 
         # Set location. Must have filter for it to start. This is victoria
@@ -50,47 +49,83 @@ def start_listener(twitter_listener, locations):
     except Exception as e:
         print("Error:", e)
 
-# Add tweets to database
-def save_tweet(db: database.DBHelper, tweet: Dict[str, Any]):
+
+def search_user(user_id, q):
+    # Search user
+
+    tweets_old = tweepy.Cursor(api.user_timeline, id=user_id, \
+        since_id=config.TWEET_DEC2018, max_id=config.TWEET_APR2019).items(200)
+
+    tweets_new = tweepy.Cursor(api.user_timeline, id=user_id, \
+        since_id=config.TWEET_DEC2019, max_id=config.TWEET_APR2020).items(200)
+
+    # Add tweets to job queue
+    count =0 
+    for i in tweets_old:
+        db.add_tweet(i._json)
+        count += 1
+
+    for i in tweets_new:
+        db.add_tweet(i._json)
+        count += 1
+
+    print(f"{user_id}: {count}\n")
+
+def save_tweet(tweet, q):
     db.add_tweet(tweet)
-    db.add_user(tweet["user"]["id_str"], tweet["user"]["screen_name"], tweet["id_str"])
+
+    # Check if seen user before
+    if db.add_user(tweet["user"]["id_str"], tweet["user"]["screen_name"], tweet["id_str"]):
 
 
-# Create job queue
-# May not need job queue
-q = queue.Queue()
-twitter_listener = StreamListener(q)
-db = database.DBHelper()
+        # Can only get 200 tweets from a user at a time. Add for loop to increase.
+        # for i in range(5):
+        search_user(tweet["user"]["id_str"], q)
 
+def main():
 
-# Start listening
-threading.Thread(target=start_listener, args=(twitter_listener, None)).start()
+    # Create job queue
+    # May not need job queue
+    q = queue.Queue()
 
+    global api
+    api = get_auth()
 
-# Number of API errors
-# Move this into the listener?
-error_count = 0
-
-
-while True:
-    try:
-        # Look for tweet
-        tweet = q.get()
-
-        try:
-            save_tweet(db, tweet)
-            print("saved")
-        except Exception as e:
-            print("Save error", e)
-            error_count += 1
-            if error_count> 100:
-                # Stops us from being rate limited
-                print("Too many errors")
-                system.exit()
-
-
-    except queue.Empty:
-        time.sleep(2)
-        continue
-
+    global db
+    db = database.DBHelper()
     
+    twitter_listener = StreamListener(q)
+    
+    # Start listening
+    threading.Thread(target=start_listener, args=(twitter_listener, None)).start()
+
+    # Number of API errors
+    # Move this into the listener?
+    error_count = 0
+
+    while True:
+        try:
+            # Look for tweet
+            tweet = q.get()
+
+            try:
+
+                save_tweet(tweet, q)
+                
+            except Exception as e:
+                print("Save error", e)
+                error_count += 1
+                if error_count> 100:
+                    # Stops us from being rate limited
+                    print("Too many errors")
+                    system.exit()
+
+
+        except queue.Empty:
+            time.sleep(2)
+            continue
+
+        
+
+if __name__ == "__main__":
+    main()

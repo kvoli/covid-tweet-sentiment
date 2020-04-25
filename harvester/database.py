@@ -30,12 +30,11 @@ class DBHelper:
         if not self.db_tweets.get(tweet["id_str"]):
 
             data = self.tweetProcessor.process_tweet(tweet)
-
             if data:
                 self.db_tweets[tweet["id_str"]] = data
 
 
-    def add_user(self, user_id, user_handle, last_tweet) -> None:
+    def add_user(self, user_id, user_handle, last_tweet) -> bool:
         
         user_doc = self.db_users.get(user_id)
         if not user_doc:
@@ -45,15 +44,19 @@ class DBHelper:
                 "harvestTime": int(time.time()),
                 "harvestNode": self.id,
                 "lastTweet": last_tweet,
-                "tweetCount": 0
+                "tweetCount": 0 # THIS IS FALSE FOR NEW SEARCH METHOD
             }
 
             self.db_users[user_id] = data
+
+            return True
 
         else:
             user_doc["lastTweet"] = last_tweet
             user_doc["tweetCount"] = user_doc["tweetCount"] + 1
             self.db_users.save(user_doc)
+
+            return False
 
 
         
