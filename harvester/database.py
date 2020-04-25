@@ -43,7 +43,7 @@ class DBHelper:
 
     def add_user(self, user_id, user_handle, last_tweet) -> bool:
         
-
+        # Add in processor method
         data = {
             '_id': user_id,
             'screenName': user_handle,

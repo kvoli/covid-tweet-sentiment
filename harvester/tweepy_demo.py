@@ -104,7 +104,7 @@ def main():
     twitter_listener = StreamListener(q)
     
     # Start listening
-    threading.Thread(target=start_listener, args=(twitter_listener)).start()
+    threading.Thread(target=start_listener, args=(twitter_listener,)).start()
 
     # Start thread to do a search for users who tweeted recently in Melb with location, add to quueue
 
