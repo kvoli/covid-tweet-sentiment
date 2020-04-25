@@ -15,6 +15,6 @@ jobs:
       - name: Publish Image
         run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
       - name: Build the Docker image
-        run: docker build -t kvoli/ccc-assignment-2 .
+        run: docker build -t kvoli/ccc-assignment-2 src/client/.
       - name: Push the Docker image to the registry
         run: docker push kvoli/ccc-assignment-2
