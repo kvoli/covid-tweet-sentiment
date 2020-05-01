@@ -3,8 +3,6 @@ name: Package Client Docker
 
 on:
   push:
-    branches:
-      - master
     paths:
       - 'src/client/*'
 jobs:

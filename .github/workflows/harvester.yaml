@@ -3,8 +3,6 @@ name: Package Harvester Docker
 
 on:
   push:
-    branches:
-      - master
     paths:
       - 'harvester/*'
 jobs:
