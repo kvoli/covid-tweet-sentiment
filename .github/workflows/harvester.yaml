@@ -5,6 +5,9 @@ on:
   push:
     paths:
       - 'harvester/*'
+  pull_request:
+    branches:
+      - master
 jobs:
   build:
     name: build latest docker image
