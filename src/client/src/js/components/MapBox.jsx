@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState} from 'react'
 import mapboxgl from 'mapbox-gl'
-import {MAPBOX_KEY, MAPBOX_PUB_KEY} from '../constants/config'
+import { MAPBOX_PUB_KEY} from '../constants/config'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import Sidebar from './Sidebar'
 
@@ -8,12 +8,14 @@ import * as melb_geo from '../constants/melbourne.geojson'
 import * as melb_points from '../constants/sampleTwitter.json'
 import { selectArea, selectPoint, openStatsDrawer } from '../actions'
 import { useSelector, useDispatch } from 'react-redux';
-import { jsonGeoJson } from '../helpers'
+import { jsonGeoJson, requestDB } from '../helpers'
 const styles = {
   width: "100vw",
   height: "calc(100vh - 115px)",
   position: "absolute"
 };
+
+
 
 const MapBox = () => {
     const dispatch = useDispatch();
@@ -26,9 +28,11 @@ const MapBox = () => {
 
     const points = jsonGeoJson(melb_points);
     const suburbs = melb_geo;
+    console.log(requestDB(''))
 
 
     useEffect(() => {
+      console.log(requestDB(''))
         mapboxgl.accessToken = MAPBOX_PUB_KEY;
         const initializeMap = ({ setMap, mapContainer }) => {
           const map = new mapboxgl.Map({
@@ -40,6 +44,7 @@ const MapBox = () => {
 
     
           map.on("load", () => {
+
             setMap(map);
             map.resize();
             map.addSource('suburbs', {
