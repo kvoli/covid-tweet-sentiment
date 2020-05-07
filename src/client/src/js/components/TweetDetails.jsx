@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import UserDetails from './UserDetails'
 import { Grid, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -11,7 +12,7 @@ const useStyles = makeStyles((theme) => ({
         width: '100%',
     },
     pad1: {
-        padding: theme.spacing(2),
+        padding: theme.spacing(1),
     },
     heading: {
         fontSize: theme.typography.pxToRem(20),
@@ -42,6 +43,7 @@ const TweetDetails = ({ selected }) => {
     console.log(selected.properties)
     const [loadingTweet, setLoadingTweet] = useState(true);
     const [loadingSentiment, setLoadingSentiment] = useState(true);
+    const [renderUser, setRenderUser] = useState(false);
     const twitter = <TwitterTweetEmbed tweetId={selected.properties.tweetId} options={{ width: 400 }} />
 
     const loadTweet = () => {
@@ -58,37 +60,41 @@ const TweetDetails = ({ selected }) => {
 
 
     return (
-        <Grid
-            container
-            direction="column"
-            justify="flex-start"
-            alignItems="center"
-            spacing={6}
-            className={classes.pad2}
-        >
-            <Grid item className={classes.pad1}>
-                <Typography align='center' className={classes.heading1}>Tweet Data</Typography>
-                {loadingTweet ? <div className={classes.spinner}><CircularProgress /></div> : <div>{twitter}</div>}
-                {loadTweet()}
-            </Grid>
-            <Grid item className={classes.pad1}>
-                <Typography align='center' className={classes.heading}>Sentiment Score</Typography>
+        <div>
+            {renderUser ? <UserDetails /> :
+                (<Grid
+                    container
+                    direction="column"
+                    justify="flex-start"
+                    alignItems="center"
+                    spacing={6}
+                    className={classes.pad2}
+                >
+                    <Grid item className={classes.pad1}>
+                        <Typography align='center' className={classes.heading1}>Tweet Data</Typography>
+                        {loadingTweet ? <div className={classes.spinner}><CircularProgress /></div> : <div>{twitter}</div>}
+                        {loadTweet()}
+                    </Grid>
+                    <Grid item className={classes.pad1}>
+                        <Typography align='center' className={classes.heading}>Sentiment Score</Typography>
 
-                {loadingSentiment ? <div className={classes.spinner}><CircularProgress /></div> : <div><ReactStoreIndicator
-                    value={selected.properties.sentiment}
-                    maxValue={10}
-                    lineGap={3}
-                /></div>}
-                {loadSentiment()}
+                        {loadingSentiment ? <div className={classes.spinner}><CircularProgress /></div> : <div><ReactStoreIndicator
+                            value={selected.properties.sentiment}
+                            maxValue={10}
+                            lineGap={3}
+                        /></div>}
+                        {loadSentiment()}
 
-            </Grid>
-            <Grid item>
-                {/* #00acee twitter blue*/}
-                {loadingSentiment ? null :
-                    <Button variant="contained" color="primary">User Data</Button>}
-            </Grid>
+                    </Grid>
+                    <Grid item>
+                        {loadingSentiment ? null :
+                            <Button variant="contained" color="primary" onClick={() => setRenderUser(true)}>User Data</Button>}
+                    </Grid>
 
-        </Grid>
+                </Grid>)
+
+            }</div>
+
     )
 
 }

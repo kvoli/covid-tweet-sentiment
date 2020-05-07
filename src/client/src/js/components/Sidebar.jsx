@@ -14,13 +14,15 @@ const useStyles = makeStyles({
   fullList: {
     width: 'auto',
   },
+  drawerPaper: {
+    width: 470,
+  }
 });
 
 export default function Sidebar(opened, selected) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const state = useSelector(store => store.MapReducer);
-
   const toggleDrawer = (env) => (event) => {
     console.log(event)
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
@@ -52,7 +54,9 @@ export default function Sidebar(opened, selected) {
   return (
     <div>
       <React.Fragment>
-        <Drawer anchor={'right'} open={state.drawerOpen} onClose={toggleDrawer(false)}>
+        <Drawer anchor={'right'} open={state.drawerOpen} onClose={toggleDrawer(false)} classes={{
+          paper: classes.drawerPaper
+        }}>
           {list()}
         </Drawer>
       </React.Fragment>
