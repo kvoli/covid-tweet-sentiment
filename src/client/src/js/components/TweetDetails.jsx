@@ -21,6 +21,7 @@ const useStyles = makeStyles((theme) => ({
     heading1: {
         fontSize: theme.typography.pxToRem(25),
         fontWeight: theme.typography.fontWeightBold,
+        marginBottom: theme.spacing(2)
     },
     pad2: {
         padding: theme.spacing(2),
