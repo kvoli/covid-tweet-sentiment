@@ -1,4 +1,5 @@
 import React from 'react'
+import { useSelector } from 'react-redux'
 import { Grid, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -38,21 +39,10 @@ const useStyles = makeStyles((theme) => ({
 
 const UserDetails = () => {
     const classes = useStyles();
-    // const [loadingTweet, setLoadingTweet] = useState(true);
-    // const [loadingSentiment, setLoadingSentiment] = useState(true);
-    // const [renderUser, setRenderUser] = useState(false);
-    // const twitter = <TwitterTweetEmbed tweetId={selected.properties.tweetId} options={{ width: 400 }} />
+    const state = useSelector(store => store.MapReducer)
+    const { userData, selected } = state
+    console.log(userData)
 
-    // const loadTweet = () => {
-    //     setTimeout(() =>
-    //         setLoadingTweet(false), 2000)
-    //     return null
-    // }
-    // const loadSentiment = () => {
-    //     setTimeout(() =>
-    //         setLoadingSentiment(false), 3000)
-    //     return null
-    // }
     return (<div><Grid
         container
         direction="column"

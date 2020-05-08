@@ -1,5 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 import UserDetails from './UserDetails'
+import { requestDB } from '../helpers/index'
+import { getUserHistory } from '../actions'
 import { Grid, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -38,13 +41,25 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-const TweetDetails = ({ selected }) => {
+const TweetDetails = () => {
     const classes = useStyles();
-    console.log(selected.properties)
+    const dispatch = useDispatch()
+    const state = useSelector(store => store.MapReducer)
+    const { selected } = state
     const [loadingTweet, setLoadingTweet] = useState(true);
     const [loadingSentiment, setLoadingSentiment] = useState(true);
     const [renderUser, setRenderUser] = useState(false);
     const twitter = <TwitterTweetEmbed tweetId={selected.properties.tweetId} options={{ width: 400 }} />
+
+    const loadUserData = async () => {
+        let res = await requestDB(`users/${JSON.parse(selected.properties.user).id}`)
+        const userData = res.data
+        return userData
+    }
+    // let userData = null
+    useEffect(() => {
+        loadUserData().then(res => dispatch(getUserHistory(res)))
+    }, [])
 
     const loadTweet = () => {
         setTimeout(() =>
@@ -88,7 +103,10 @@ const TweetDetails = ({ selected }) => {
                     </Grid>
                     <Grid item>
                         {loadingSentiment ? null :
-                            <Button variant="contained" color="primary" onClick={() => setRenderUser(true)}>User Data</Button>}
+                            <Button variant="contained" color="primary" onClick={() => {
+                                setRenderUser(true)
+
+                            }}>User Data</Button>}
                     </Grid>
 
                 </Grid>)
