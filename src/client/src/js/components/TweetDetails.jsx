@@ -56,7 +56,7 @@ const TweetDetails = () => {
         const userData = res.data
         return userData
     }
-    // let userData = null
+
     useEffect(() => {
         loadUserData().then(res => dispatch(getUserHistory(res)))
     }, [])

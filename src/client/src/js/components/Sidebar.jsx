@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import { useSelector, useDispatch } from 'react-redux';
 import { openStatsDrawer } from '../actions';
-import { List, ListItem, ListItemText } from '@material-ui/core';
+
 import Suburb from './Suburb';
 import TweetDetails from './TweetDetails'
 
@@ -24,7 +24,6 @@ export default function Sidebar(opened, selected) {
   const dispatch = useDispatch();
   const state = useSelector(store => store.MapReducer);
   const toggleDrawer = (env) => (event) => {
-    console.log(event)
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
