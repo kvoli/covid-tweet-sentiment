@@ -8,7 +8,7 @@ const useStyles = makeStyles((theme) => ({
         width: '100%',
     },
     heading: {
-        fontSize: theme.typography.pxToRem(15),
+        fontSize: theme.typography.pxToRem(20),
         fontWeight: theme.typography.fontWeightRegular,
     },
     heading1: {
@@ -124,7 +124,7 @@ const Suburb = ({ selected }) => {
                 </List>
             </Grid>
             <Grid item>
-                <Typography align='center' className={classes.heading}>Monthly Sentiment Average</Typography>
+                <Typography align='center' className={classes.heading} gutterBottom>Monthly Sentiment Average</Typography>
                 <Card>
                     <Bar
                         data={() => setBarData(selected)}
@@ -136,7 +136,7 @@ const Suburb = ({ selected }) => {
             </Grid>
             <Grid item>
 
-                <Typography align='center' className={classes.heading}>Monthly Tweet Frequency</Typography>
+                <Typography align='center' className={classes.heading} gutterBottom>Monthly Tweet Frequency</Typography>
                 <Card>
                     <Doughnut
                         data={() => setCircleData(selected)}
