@@ -17,7 +17,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
       - name: Publish to Client to Registry
-        uses: elgohr/Publish-Docker-Github-Action@master
+        uses: elgohr/Publish-Docker-Github-Action@v5
         with:
           name: kvoli/ccc-client
           username: ${{ secrets.DOCKERHUB_USERNAME }}
